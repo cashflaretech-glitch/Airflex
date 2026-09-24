@@ -23,7 +23,7 @@ jest.mock('next-intl/middleware', () => ({
 // next-intl/routing ships ESM-only; stub it so the middleware's routing config
 // can be imported under Jest without transforming node_modules.
 jest.mock('next-intl/routing', () => ({
-  defineRouting: (config: any) => config,
+  defineRouting: (config: unknown) => config,
 }));
 
 describe('Middleware Matcher', () => {
@@ -33,7 +33,12 @@ describe('Middleware Matcher', () => {
 });
 
 describe('Middleware JWT Validation', () => {
-  let mockRequest: any;
+  let mockRequest: {
+    nextUrl: { pathname: string };
+    cookies: { get: jest.Mock };
+    headers: Headers;
+    url: string;
+  };
 
   beforeEach(() => {
     mockRequest = {

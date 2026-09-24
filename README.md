@@ -8,6 +8,7 @@
 ![Soroban](https://img.shields.io/badge/contracts-Soroban-orange)
 ![Node](https://img.shields.io/badge/node-20.x-green)
 ![TypeScript](https://img.shields.io/badge/typescript-5.5-blue)
+[![Type coverage](https://img.shields.io/badge/type%20coverage-95.19%25-brightgreen)](https://github.com/arflexx/Airflex/actions/workflows/type-coverage.yml)
 
 AirFlex is an open-source fintech platform that enables users to securely buy, sell, and
 exchange airtime and mobile data through a peer-to-peer marketplace backed by Stellar. By

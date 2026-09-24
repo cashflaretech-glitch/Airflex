@@ -1,0 +1,95 @@
+name: Type Coverage
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  type-coverage:
+    name: Type coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pull request
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check pull request coverage
+        id: head
+        continue-on-error: true
+        run: |
+          pnpm type-coverage | tee type-coverage-head.txt || true
+          echo "percent=$(sed -n 's/^TYPE_COVERAGE_PERCENT=//p' type-coverage-head.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Check base branch coverage
+        id: base
+        continue-on-error: true
+        run: |
+          git worktree add ../airflex-base "origin/${{ github.base_ref }}"
+          pnpm --dir ../airflex-base install --frozen-lockfile
+          pnpm --dir ../airflex-base type-coverage | tee type-coverage-base.txt || true
+          echo "percent=$(sed -n 's/^TYPE_COVERAGE_PERCENT=//p' type-coverage-base.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Comment coverage delta
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const head = Number('${{ steps.head.outputs.percent }}');
+            const base = Number('${{ steps.base.outputs.percent }}');
+            const delta = head - base;
+            const sign = delta >= 0 ? '+' : '';
+            const body = `<!-- type-coverage -->
+            ## Type coverage
+
+            | Branch | Coverage |
+            | --- | ---: |
+            | Base | ${base.toFixed(2)}% |
+            | Pull request | ${head.toFixed(2)}% |
+
+            **Delta:** ${sign}${delta.toFixed(2)} percentage points
+
+            The minimum required coverage is **95%**.`;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((comment) => comment.body.includes('<!-- type-coverage -->'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Enforce coverage threshold
+        env:
+          HEAD_PERCENT: ${{ steps.head.outputs.percent }}
+        run: node -e "if (Number(process.env.HEAD_PERCENT) < 95) process.exit(1)"

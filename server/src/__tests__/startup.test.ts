@@ -11,8 +11,9 @@ function runServer(env: Record<string, string | undefined>) {
       timeout: 3000,
     });
     return { code: 0, output: '' };
-  } catch (err: any) {
-    return { code: err.status, output: err.stderr || err.stdout || '' };
+  } catch (err: unknown) {
+    const error = err as { status?: number; stderr?: string; stdout?: string };
+    return { code: error.status, output: error.stderr || error.stdout || '' };
   }
 }
 
