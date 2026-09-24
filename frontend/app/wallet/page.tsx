@@ -7,6 +7,7 @@ import DepositModal from "./DepositModal";
 import WithdrawModal from "./WithdrawModal";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
+import type { BadgeStatusVariant } from "../../components/ui/Badge";
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
 import { StellarExplorerLink } from "../../components/StellarExplorerLink";
@@ -252,7 +253,7 @@ Stellar Public Key (On-chain Account)
                         ₦{tx.amount.toLocaleString()}
                       </td>
                       <td className="px-6 py-3.5">
-                        <Badge variant={tx.status === "Active" ? "Open" : (tx.status as any)} />
+                        <Badge variant={tx.status === "Active" ? "Open" : (tx.status as BadgeStatusVariant)} />
                       </td>
                       <td className="px-6 py-3.5">
                         {tx.escrow_tx_hash ? (

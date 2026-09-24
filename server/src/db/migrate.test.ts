@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import os from "os";
+import type { Pool, PoolClient } from "pg";
 import { runMigrations, rollbackLastMigration, ensureMigrationTable } from "./migrate";
 
 describe("Database Migrations CLI (migrate.ts)", () => {
@@ -21,7 +22,7 @@ describe("Database Migrations CLI (migrate.ts)", () => {
       query: mockQuery,
       release: jest.fn(),
     };
-    await ensureMigrationTable(mockClient as any);
+    await ensureMigrationTable(mockClient as unknown as PoolClient);
     expect(mockQuery).toHaveBeenCalledWith(
       expect.stringContaining("CREATE TABLE IF NOT EXISTS schema_migrations")
     );
@@ -49,7 +50,7 @@ describe("Database Migrations CLI (migrate.ts)", () => {
     };
 
     const result = await runMigrations({
-      pool: mockPool as any,
+      pool: mockPool as unknown as Pool,
       migrationsDir: tempDir,
     });
 
@@ -88,7 +89,7 @@ describe("Database Migrations CLI (migrate.ts)", () => {
     };
 
     const result = await runMigrations({
-      pool: mockPool as any,
+      pool: mockPool as unknown as Pool,
       migrationsDir: tempDir,
     });
 
@@ -116,7 +117,7 @@ describe("Database Migrations CLI (migrate.ts)", () => {
     };
 
     const rolledBackFile = await rollbackLastMigration({
-      pool: mockPool as any,
+      pool: mockPool as unknown as Pool,
     });
 
     expect(rolledBackFile).toBe("002_kyc.sql");

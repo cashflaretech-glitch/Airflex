@@ -4,16 +4,16 @@ import type { Request, Response, NextFunction, RequestHandler } from "express";
  * An asynchronous Express request handler that returns a Promise.
  */
 export type AsyncRequestHandler<
-  P = any,
-  ResBody = any,
-  ReqBody = any,
-  ReqQuery = any,
-  Locals extends Record<string, any> = Record<string, any>
+  P = Record<string, string>,
+  ResBody = unknown,
+  ReqBody = unknown,
+  ReqQuery = Record<string, string | string[]>,
+  Locals extends Record<string, unknown> = Record<string, unknown>
 > = (
   req: Request<P, ResBody, ReqBody, ReqQuery, Locals>,
   res: Response<ResBody, Locals>,
   next: NextFunction
-) => Promise<any>;
+) => Promise<unknown>;
 
 /**
  * Wraps an asynchronous Express route handler to catch any rejected promises or
@@ -33,11 +33,11 @@ export type AsyncRequestHandler<
  * @returns Standard Express RequestHandler that catches errors and calls next(err)
  */
 export function asyncHandler<
-  P = any,
-  ResBody = any,
-  ReqBody = any,
-  ReqQuery = any,
-  Locals extends Record<string, any> = Record<string, any>
+  P = Record<string, string>,
+  ResBody = unknown,
+  ReqBody = unknown,
+  ReqQuery = Record<string, string | string[]>,
+  Locals extends Record<string, unknown> = Record<string, unknown>
 >(
   fn: AsyncRequestHandler<P, ResBody, ReqBody, ReqQuery, Locals>
 ): RequestHandler<P, ResBody, ReqBody, ReqQuery, Locals> {

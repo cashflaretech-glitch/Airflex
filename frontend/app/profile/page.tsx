@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { getToken, getUser, isAuthenticated } from "../lib/auth";
 import type { TradeOffer, TradeStatus } from "../../../server/src/types/trade";
 import { Badge } from "../../components/ui/Badge";
+import type { BadgeStatusVariant } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -89,7 +90,7 @@ function formatDateTime(iso: string): string {
 
 function StatusBadge({ status }: { status: TradeStatus }) {
   const variant = status === "Active" ? "Open" : status;
-  return <Badge variant={variant as any} />;
+  return <Badge variant={variant as BadgeStatusVariant} />;
 }
 
 /** A single stat card in the profile summary */

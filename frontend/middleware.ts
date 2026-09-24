@@ -19,7 +19,7 @@ const PROTECTED_PREFIXES = [
 const intlMiddleware = createIntlMiddleware(routing);
 
 // JWT verification helper (simplified - in production use proper JWT library)
-function verifyJWT(token: string): { valid: boolean; payload?: any } {
+function verifyJWT(token: string): { valid: boolean; payload?: Record<string, unknown> } {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return { valid: false };
@@ -28,7 +28,7 @@ function verifyJWT(token: string): { valid: boolean; payload?: any } {
       Buffer.from(parts[1], "base64url").toString("utf-8")
     );
 
-    if (payload.exp && payload.exp < Date.now() / 1000) {
+    if (typeof payload.exp === "number" && payload.exp < Date.now() / 1000) {
       return { valid: false };
     }
 

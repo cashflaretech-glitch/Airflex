@@ -7,11 +7,14 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "type-coverage": "node scripts/type-coverage.mjs",
     "load:test": "bash tests/load/run-all.sh",
     "clean": "turbo run clean"
   },
   "devDependencies": {
-    "turbo": "^2.0.0"
+    "turbo": "^2.0.0",
+    "type-coverage": "2.30.1",
+    "typescript": "5.5.3"
   },
   "pnpm": {
     "overrides": {
